@@ -1,6 +1,8 @@
 package com.skilldistillery.filmquery.app;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import com.skilldistillery.filmquery.database.DatabaseAccessor;
@@ -107,11 +109,19 @@ public class FilmQueryApp {
 		System.out.println("Please enter a search keyword: ");
 		String keyword = input.nextLine();
 		
-		db.findFilmByKeyword(keyword); 
+		List<Film> filmList = db.findFilmByKeyword(keyword); 
 		
-		System.out.println(db.findFilmByKeyword(keyword));
-	
+		if(filmList.isEmpty()) {
+			System.out.println("Your keyword did not yield any results.");
+		} else {
+			for (Film film : filmList) {
+			System.out.println(film);
+			}
+		}
+		
+//		System.out.println(db.findFilmByKeyword(keyword));
 
+		
 		// if the film is not found, a message appears saying so.
 		// if the film is found, display title, year, rating, and description.
 		// the keyword should search the title and description

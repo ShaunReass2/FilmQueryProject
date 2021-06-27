@@ -5,23 +5,27 @@ import java.util.List;
 public class Film {
 	private int id; 
 	private String title; 
-	private String description; 
 	private int releaseYear; 
+	private String rating; 
+	private String description; 
 	private String languageId; 
 	private int rentalDuration; 
 	private int rentalRate; 
 	private int length; 
 	private double replacementCost;
-	private String rating; 
 	private String specialFeatures; 
 	private List cast; 
+	private Language languageName; 
 
 	@Override
 	public String toString() {
-		return "Film ID: " + id + " \n Title: " + title + " \n Description: " + description + " \n Release Year: " + releaseYear
-				+ " \n Language ID: " + languageId + " \n Rental Duration: " + rentalDuration + " \n Rental Rate: " + rentalRate
-				+ " \n Length: " + length + " \n Replacement Cost: " + replacementCost + " \n Rating: " + rating
-				+ " \n Special Features: " + specialFeatures + " \n Cast: " + cast + "";
+		return " \n Film ID: " + id + " \n Title: " + title + " \n Release Year: " + releaseYear + " \n Rating: " + rating + " \n Description: " + description + 
+				" \n Language: " + languageName + "";
+						 
+// 				" \n Film ID: " + id + " \n Title: " + title + " \n Release Year: " + releaseYear + " \n Rating: " + rating + " \n Description: " + description 
+//				+ " \n Language ID: " + languageId + " \n Rental Duration: " + rentalDuration + " \n Rental Rate: " + rentalRate
+//				+ " \n Length: " + length + " \n Replacement Cost: " + replacementCost + 
+//				+ " \n Special Features: " + specialFeatures + " \n Cast: " + cast + "";
 	}
 	
 	public Film() { }
@@ -31,16 +35,24 @@ public class Film {
 		super();
 		this.id = id;
 		this.title = title;
-		this.description = description;
 		this.releaseYear = releaseYear;
+		this.rating = rating;
+		this.description = description;
 		this.languageId = languageId;
 		this.rentalDuration = rentalDuration;
 		this.rentalRate = rentalRate;
 		this.length = length;
 		this.replacementCost = replacementCost;
-		this.rating = rating;
 		this.specialFeatures = specialFeatures;
 		this.cast = cast;
+	}
+	
+	public Language getLanguageName() {
+		return languageName;
+	}
+
+	public void setLanguageName(Language languageName) {
+		this.languageName = languageName;
 	}
 
 	public List getCast() {

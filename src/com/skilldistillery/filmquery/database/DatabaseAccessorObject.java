@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.skilldistillery.filmquery.entities.Actor;
 import com.skilldistillery.filmquery.entities.Film;
+import com.skilldistillery.filmquery.entities.Language;
 
 public class DatabaseAccessorObject implements DatabaseAccessor {
 
@@ -27,12 +28,13 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 
 	public Film findFilmById(int filmId) {
 		Film film = null;
+		Language languageName = new Language(); 
 
 		try {
 			Connection conn = DriverManager.getConnection(URL, user, pass);
 
-			String sql = "SELECT film.id, film.title, film.description, film.release_year, film.language_id, film.rental_duration, film.rental_rate, "
-					+ "film.length, film.replacement_cost, film.rating, film.special_features " + "FROM film "
+			String sql = "SELECT film.id, film.title, film.release_year, film.rating, film.description, film.language_id, film.rental_duration, film.rental_rate, "
+					+ "film.length, film.replacement_cost, film.special_features, language.name " + "FROM film "
 					+ "	JOIN language ON language.id = film.language_id " + "WHERE film.id = ?";
 
 			PreparedStatement stmt = conn.prepareStatement(sql);
@@ -47,20 +49,23 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 //			Here is our mapping of query columns to our object fields:
 				film.setId(filmResult.getInt(1));
 				film.setTitle(filmResult.getString(2));
-				film.setDescription(filmResult.getString(3));
 				film.setReleaseYear(filmResult.getInt("release_year"));
-				film.setLanguageId(filmResult.getString(5));                                // should this be an int?
+				film.setRating(filmResult.getString(4));
+				film.setDescription(filmResult.getString(5));
+				film.setLanguageId(filmResult.getString(6));                                // should this be an int?
 				film.setRentalDuration(filmResult.getInt("rental_duration"));
 				film.setRentalRate(filmResult.getInt("rental_rate"));
 				film.setLength(filmResult.getInt("length"));
 				film.setReplacementCost(filmResult.getDouble("replacement_cost"));
-				film.setRating(filmResult.getString(10));
 				film.setSpecialFeatures(filmResult.getString(11));
+				languageName.setLanguageName(filmResult.getString("language.name"));
+				film.setLanguageName(languageName); 
 				film.setCast(findActorsByFilmId(filmResult.getInt(1)));
 
 			}
 			filmResult.close();
 			stmt.close();
+			conn.close(); 
 		} catch (SQLException e) {
 			
 			e.printStackTrace();
@@ -94,6 +99,7 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 			}
 			actorResult.close();
 			stmt.close();
+			conn.close(); 
 		} catch (SQLException e) {
 			
 			e.printStackTrace();
@@ -113,10 +119,10 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			stmt.setInt(1, filmId);
-
-//		System.out.println(stmt);
-
 			ResultSet actorResult = stmt.executeQuery();
+			
+//			System.out.println(stmt);
+
 			while (actorResult.next()) {
 				Actor actor = new Actor(); // create the object
 
@@ -127,9 +133,9 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 				actors.add(actor);
 
 			}
-
 			actorResult.close();
 			stmt.close();
+			conn.close(); 
 		} catch (SQLException e) {
 
 			e.printStackTrace();
@@ -139,22 +145,23 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 	
 	@Override
 	public List <Film> findFilmByKeyword(String keyword) {
-		List<Film> films = new ArrayList<>();                        // do not need to fill in the wacka wacka on the right side
+		List<Film> films = new ArrayList<>();      // do not need to fill in the wacka wacka on the right side
+		Language languageName = new Language(); 
 		
 		// sql = "SELECT yada, yada, FROM yada WHERE yada LIKE ?" 
 		// prepStmt.setString(1, "%" + searchTerm + "%");
 		
 		try {
 			Connection conn = DriverManager.getConnection(URL, user, pass);
-			String sql = "SELECT film.id, film.title, film.release_year, film.rating, film.description "
-					+ "FROM film WHERE film.title LIKE ?"; 
+			String sql = "SELECT film.id, film.title, film.release_year, film.rating, film.description, film.language_id, language.name FROM film JOIN language ON language.id = film.language_id WHERE film.title LIKE ? OR film.description LIKE ?"; 
 
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			stmt.setString(1, "%" + keyword + "%");
-
+			stmt.setString(2, "%" + keyword + "%");
+			ResultSet filmResult = stmt.executeQuery();
+			
 //		System.out.println(stmt);
 
-			ResultSet filmResult = stmt.executeQuery();
 			while (filmResult.next()) {
 				Film film = new Film(); // create the object
 
@@ -164,10 +171,14 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 				film.setReleaseYear(filmResult.getInt("release_year"));
 				film.setRating(filmResult.getString(4));
 				film.setDescription(filmResult.getString(5));
+				languageName.setLanguageName(filmResult.getString("language.name"));
+				film.setLanguageName(languageName); 
+				films.add(film);
+				
 			}
-
 			filmResult.close();
 			stmt.close();
+			conn.close(); 
 		} catch (SQLException e) {
 
 			e.printStackTrace();
