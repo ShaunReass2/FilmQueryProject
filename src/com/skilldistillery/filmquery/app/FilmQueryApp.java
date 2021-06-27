@@ -8,69 +8,66 @@ import com.skilldistillery.filmquery.database.DatabaseAccessorObject;
 import com.skilldistillery.filmquery.entities.Film;
 
 public class FilmQueryApp {
-  
-  DatabaseAccessor db = new DatabaseAccessorObject();
 
-  public static void main(String[] args) throws SQLException {
-    FilmQueryApp app = new FilmQueryApp();
-//   app.test();
-   app.launch();
-   displayMenu(); 
-  }
+	DatabaseAccessor db = new DatabaseAccessorObject();
+	Scanner input = new Scanner(System.in);
+	
+	public static void main(String[] args) throws SQLException {
+		FilmQueryApp app = new FilmQueryApp();
+//      app.test();
+		app.launch();
+		
+	}
 
-  private void test() throws SQLException {
-    Film film = db.findFilmById(1);
-    System.out.println(film);
-  }
+	private void test() throws SQLException {
+		Film film = db.findFilmById(1);
+		System.out.println(film);
+	}
 
-  private void launch() {
-    Scanner input = new Scanner(System.in);
-    
-    startUserInterface(input);
-    
-    input.close();
-  }
+	private void launch() {
+		
+		startUserInterface();
 
-  private void startUserInterface(Scanner input) {
-    
-  }
-  
-  private void run() {
+		input.close();
+	}
 
+	private void startUserInterface() {
+		
 		boolean menu = true;
-		// menu needs displayed upon program start
+		// menu needs displayed upon program start and exit only when user chooses to do so
 
 		while (menu) {
 
 			displayMenu();
 
-			int menuChoice = scanner.nextInt();
-			scanner.nextLine();
+			int userChoice = input.nextInt();
+		    input.nextLine();
 
-			switch (menuChoice) {
+			switch (userChoice) {
 
 			case 1:
-				findFilmById();
+				filmSearchById();
 				break;
 			case 2:
-				findFilmByKeyword(); 
+				filmSearchByKeyword();
 				break;
 			case 3:
-				quitApp();
+				System.out.println("Thanks for being a part of this! See ya!");
+				menu = (false);
 				break;
 
 			default:
 				System.out.println(
 						" That was not a valid selection. Please choose a number between 1 and 3, as listed in the menu.");
 				break;
-
 			}
+
 		}
 
 	}
-  
-  private static void displayMenu() {
-		
+
+	private static void displayMenu() {
+
 		System.out.println("                                                                  ");
 		System.out.println("                       What would you like to do?                 ");
 		System.out.println("                                                                  ");
@@ -83,14 +80,45 @@ public class FilmQueryApp {
 		System.out.println("                 3. Exit                                          ");
 		System.out.println("                                                                  ");
 		System.out.println("              ********************************************        ");
+		System.out.println("                                                                  ");
 
 	}
-  
-	protected void quitApp() {
-		System.out.println("Thank you for using this app!  Your participation gets two thumbs up!");
-		scanner.close();
-		System.exit(0);
-
+	
+	private void filmSearchById() {
+		
+		System.out.println("Please enter a film ID number: ");
+		int filmId = input.nextInt();
+		
+		try {
+			System.out.println(db.findFilmById(filmId));
+		} catch (SQLException e) {
+		
+			e.printStackTrace();
+		} 
+		
+		// if the film is not found, a message appears saying so.
+		// if the film is found, display title, year, rating, and description.
+		
+		// (STRETCH GOAL) display a sub menu to decide whether to return to the main menu or view all film details
 	}
+	
+	private void filmSearchByKeyword() {
+		
+		System.out.println("Please enter a search keyword: ");
+		String keyword = input.nextLine();
+		
+		db.findFilmByKeyword(keyword); 
+		
+		System.out.println(db.findFilmByKeyword(keyword));
+	
+
+		// if the film is not found, a message appears saying so.
+		// if the film is found, display title, year, rating, and description.
+		// the keyword should search the title and description
+		
+	
+		
+	}
+	
 
 }

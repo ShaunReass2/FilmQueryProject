@@ -45,7 +45,8 @@ public class Language {
 
 	@Override
 	public String toString() {
-		return "Language [languageId=" + languageId + ", languageName=" + languageName + "]";
+		return "Language ID: " + languageId + "\n Language: " + languageName + "";
+//		return "Language [languageId=" + languageId + ", languageName=" + languageName + "]";
 	} 
 	
 }

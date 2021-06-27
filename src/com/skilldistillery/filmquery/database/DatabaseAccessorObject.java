@@ -25,75 +25,85 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 		}
 	}
 
-	public Film findFilmById(int filmId) throws SQLException {
+	public Film findFilmById(int filmId) {
 		Film film = null;
 
-		Connection conn = DriverManager.getConnection(URL, user, pass);
+		try {
+			Connection conn = DriverManager.getConnection(URL, user, pass);
 
-		String sql = "SELECT film.id, film.title, film.description, film.release_year, film.language_id, film.rental_duration, film.rental_rate, "
-				+ "film.length, film.replacement_cost, film.rating, film.special_features " + "FROM film "
-				+ "	JOIN language ON language.id = film.language_id " + "WHERE film.id = ?";
+			String sql = "SELECT film.id, film.title, film.description, film.release_year, film.language_id, film.rental_duration, film.rental_rate, "
+					+ "film.length, film.replacement_cost, film.rating, film.special_features " + "FROM film "
+					+ "	JOIN language ON language.id = film.language_id " + "WHERE film.id = ?";
 
-		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, filmId);
-		ResultSet filmResult = stmt.executeQuery();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, filmId);
+			ResultSet filmResult = stmt.executeQuery();
 
 //		System.out.println(stmt);
-		
-		if (filmResult.next()) {
-			film = new Film(); // create the object
+			
+			if (filmResult.next()) {
+				film = new Film(); // create the object
 
 //			Here is our mapping of query columns to our object fields:
-			film.setId(filmResult.getInt(1));
-			film.setTitle(filmResult.getString(2));
-			film.setDescription(filmResult.getString(3));
-			film.setReleaseYear(filmResult.getInt("release_year"));
-			film.setLanguageId(filmResult.getString(5));
-			film.setRentalDuration(filmResult.getInt("rental_duration"));
-			film.setRentalRate(filmResult.getInt("rental_rate"));
-			film.setLength(filmResult.getInt("length"));
-			film.setReplacementCost(filmResult.getDouble("replacement_cost"));
-			film.setRating(filmResult.getString(10));
-			film.setSpecialFeatures(filmResult.getString(11));
-			film.setCast(findActorsByFilmId(filmResult.getInt(1)));
+				film.setId(filmResult.getInt(1));
+				film.setTitle(filmResult.getString(2));
+				film.setDescription(filmResult.getString(3));
+				film.setReleaseYear(filmResult.getInt("release_year"));
+				film.setLanguageId(filmResult.getString(5));                                // should this be an int?
+				film.setRentalDuration(filmResult.getInt("rental_duration"));
+				film.setRentalRate(filmResult.getInt("rental_rate"));
+				film.setLength(filmResult.getInt("length"));
+				film.setReplacementCost(filmResult.getDouble("replacement_cost"));
+				film.setRating(filmResult.getString(10));
+				film.setSpecialFeatures(filmResult.getString(11));
+				film.setCast(findActorsByFilmId(filmResult.getInt(1)));
 
+			}
+			filmResult.close();
+			stmt.close();
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
 		}
-		filmResult.close();
-		stmt.close();
 		return film;
 	}
 
-	public Actor findActorById(int actorId) throws SQLException {
+	public Actor findActorById(int actorId) {
 		Actor actor = null;
 
-		Connection conn = DriverManager.getConnection(URL, user, pass);
-		String sql = "SELECT actor.id, actor.first_name, actor.last_name " + "FROM actor "
-				+ "JOIN film_actor ON actor.id = film_actor.actor_id" + "JOIN film ON film_actor.film_id = film.id "
-				+ "WHERE film.id = ?";
+		try {
+			Connection conn = DriverManager.getConnection(URL, user, pass);
+			String sql = "SELECT actor.id, actor.first_name, actor.last_name " + "FROM actor "
+					+ "JOIN film_actor ON actor.id = film_actor.actor_id" + "JOIN film ON film_actor.film_id = film.id "
+					+ "WHERE film.id = ?";
 
-		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, actorId);
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, actorId);
 
 //		System.out.println(stmt);
 
-		ResultSet actorResult = stmt.executeQuery();
-		if (actorResult.next()) {
-			actor = new Actor(); // create the object
+			ResultSet actorResult = stmt.executeQuery();
+			if (actorResult.next()) {
+				actor = new Actor(); // create the object
 
-			// Here is our mapping of query columns to our object fields:
-			actor.setId(actorResult.getInt(1));
-			actor.setFirstName(actorResult.getString(2));
-			actor.setLastName(actorResult.getString(3));
+				// Here is our mapping of query columns to our object fields:
+				actor.setId(actorResult.getInt(1));
+				actor.setFirstName(actorResult.getString(2));
+				actor.setLastName(actorResult.getString(3));
 
+			}
+			actorResult.close();
+			stmt.close();
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
 		}
-		actorResult.close();
-		stmt.close();
 		return actor;
 	}
 
 	@Override
 	public List<Actor> findActorsByFilmId(int filmId) {
-		List<Actor> actors = new ArrayList<Actor>();
+		List<Actor> actors = new ArrayList<>();
 
 		try {
 			Connection conn = DriverManager.getConnection(URL, user, pass);
@@ -127,10 +137,43 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 		return actors;
 	}
 	
-	public Film findFilmByKeyword(String actorId) throws SQLException {
-		// need to rock out some code here
+	@Override
+	public List <Film> findFilmByKeyword(String keyword) {
+		List<Film> films = new ArrayList<>();                        // do not need to fill in the wacka wacka on the right side
 		
+		// sql = "SELECT yada, yada, FROM yada WHERE yada LIKE ?" 
+		// prepStmt.setString(1, "%" + searchTerm + "%");
+		
+		try {
+			Connection conn = DriverManager.getConnection(URL, user, pass);
+			String sql = "SELECT film.id, film.title, film.release_year, film.rating, film.description "
+					+ "FROM film WHERE film.title LIKE ?"; 
+
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1, "%" + keyword + "%");
+
+//		System.out.println(stmt);
+
+			ResultSet filmResult = stmt.executeQuery();
+			while (filmResult.next()) {
+				Film film = new Film(); // create the object
+
+				// Here is our mapping of query columns to our object fields:
+				film.setId(filmResult.getInt(1));
+				film.setTitle(filmResult.getString(2));
+				film.setReleaseYear(filmResult.getInt("release_year"));
+				film.setRating(filmResult.getString(4));
+				film.setDescription(filmResult.getString(5));
+			}
+
+			filmResult.close();
+			stmt.close();
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+		return films;
 	}
-	
-	
+		
 }
+	
