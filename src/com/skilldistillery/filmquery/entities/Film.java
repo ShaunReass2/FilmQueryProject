@@ -19,15 +19,15 @@ public class Film {
 
 	@Override
 	public String toString() {
-		return " \n Film ID: " + id + " \n Title: " + title + " \n Release Year: " + releaseYear + " \n Rating: " + rating + " \n Description: " + description + 
-				" \n Language: " + languageName + "";
+		return " \n Film ID: " + id + " \n Title: " + title + " \n Release Year: " + releaseYear + " \n Rating: " + rating 
+				+ " \n Description: " + description + " \n Language: " + languageName + " \n Cast: " + cast;
 						 
 // 				" \n Film ID: " + id + " \n Title: " + title + " \n Release Year: " + releaseYear + " \n Rating: " + rating + " \n Description: " + description 
 //				+ " \n Language ID: " + languageId + " \n Rental Duration: " + rentalDuration + " \n Rental Rate: " + rentalRate
 //				+ " \n Length: " + length + " \n Replacement Cost: " + replacementCost + 
 //				+ " \n Special Features: " + specialFeatures + " \n Cast: " + cast + "";
 	}
-	
+
 	public Film() { }
 	
 	public Film(int id, String title, String description, int releaseYear, String languageId, int rentalDuration,

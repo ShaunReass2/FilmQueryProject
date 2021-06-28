@@ -7,15 +7,16 @@ public class Actor {
 	
 	public Actor() { }
 	
-	public Actor(String firstName, String lastName) {
+	public Actor(int id, String firstName, String lastName) {
 		super(); 
+		this.id = id; 
 		this.firstName = firstName;
 		this.lastName = lastName; 
 	}
 
 	@Override
 	public String toString() {
-		return "Actor ID: " + id + " \n First Name: " + firstName + " \n Last Name: " + lastName + "";
+		return firstName + " " + lastName;
 	}
 
 	public int getId() {

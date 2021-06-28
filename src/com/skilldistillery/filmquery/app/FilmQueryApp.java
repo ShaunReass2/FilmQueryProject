@@ -2,6 +2,7 @@ package com.skilldistillery.filmquery.app;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,6 +17,7 @@ public class FilmQueryApp {
 	
 	public static void main(String[] args) throws SQLException {
 		FilmQueryApp app = new FilmQueryApp();
+		Film film = new Film(); 
 //      app.test();
 		app.launch();
 		
@@ -37,13 +39,20 @@ public class FilmQueryApp {
 		
 		boolean menu = true;
 		// menu needs displayed upon program start and exit only when user chooses to do so
-
+		int userChoice = 0;
+	
 		while (menu) {
-
-			displayMenu();
-
-			int userChoice = input.nextInt();
-		    input.nextLine();
+				
+				displayMenu(); 
+				
+				try {
+					userChoice = input.nextInt();
+					
+				} catch (InputMismatchException e) {
+					System.out.println("You must enter a number.");
+					//	e.printStackTrace();
+				} 
+				input.nextLine();
 
 			switch (userChoice) {
 
@@ -57,15 +66,13 @@ public class FilmQueryApp {
 				System.out.println("Thanks for being a part of this! See ya!");
 				menu = (false);
 				break;
-
 			default:
-				System.out.println(
-						" That was not a valid selection. Please choose a number between 1 and 3, as listed in the menu.");
+				System.out.println(" That was not a valid selection. Please choose a number between 1 and 3, as listed in the menu.");
 				break;
 			}
 
 		}
-
+		
 	}
 
 	private static void displayMenu() {
@@ -88,9 +95,21 @@ public class FilmQueryApp {
 	
 	private void filmSearchById() {
 		
-		System.out.println("Please enter a film ID number: ");
-		int filmId = input.nextInt();
+		int filmId = 0;
 		
+		
+		
+		while (filmId == 0) {
+			try {
+	
+				System.out.println("Please enter a film ID number: ");
+				filmId = input.nextInt();
+			} catch (InputMismatchException e1) {
+				System.out.println("That was not a valid entry. Please enter a number value.");
+				//			e1.printStackTrace();
+			} 
+			input.nextLine(); 
+		}
 		try {
 			System.out.println(db.findFilmById(filmId));
 		} catch (SQLException e) {
@@ -99,9 +118,8 @@ public class FilmQueryApp {
 		} 
 		
 		// if the film is not found, a message appears saying so.
-		// if the film is found, display title, year, rating, and description.
-		
-		// (STRETCH GOAL) display a sub menu to decide whether to return to the main menu or view all film details
+		// if the film is found, display title, year, rating, and description.		
+		// (STRETCH GOAL) display a sub menu to decide whether to return to the main menu or view all film details.
 	}
 	
 	private void filmSearchByKeyword() {
@@ -115,20 +133,14 @@ public class FilmQueryApp {
 			System.out.println("Your keyword did not yield any results.");
 		} else {
 			for (Film film : filmList) {
-			System.out.println(film);
+				System.out.println(film);
 			}
 		}
-		
-//		System.out.println(db.findFilmByKeyword(keyword));
 
-		
 		// if the film is not found, a message appears saying so.
 		// if the film is found, display title, year, rating, and description.
-		// the keyword should search the title and description
-		
-	
+		// the keyword should search the title and description.
 		
 	}
 	
-
 }
